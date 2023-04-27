@@ -18,3 +18,5 @@
 reddit_etl.py: This file contains the Python ETL script for extracting, transforming, and loading data from Reddit API to AWS S3 using s3fs.
 
 reddit_dag.py: This file contains the DAG and task definitions for Airflow.
+
+finalDeploy_reddit_dag.py: This code is deploy on Airflow which contain the DAG and task definitions for Airflow as well as Reddit ETL data pipeline code.
