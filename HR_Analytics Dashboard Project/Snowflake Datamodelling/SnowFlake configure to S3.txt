@@ -1,0 +1,49 @@
+-- credentials
+-- arn:aws:iam::088785918047:role/s3-snowflake-permission-role
+
+-- Create Database and Schema:
+CREATE DATABASE hr_database;
+CREATE SCHEMA hr_data_schema;
+
+-- Create storage integration object:
+CREATE OR REPLACE STORAGE INTEGRATION aws_s3_storage
+type = external_stage
+storage_provider = 'S3'
+enabled = true
+storage_aws_role_arn = 'arn:aws:iam::088785918047:role/s3-snowflake-permission-role'
+storage_allowed_locations = ('S3://hr-data-analysis-1998/');
+
+-- See storage integration properties to fetch external_id so we can update it in S3:
+SHOW INTEGRATIONS;
+DESC INTEGRATION aws_s3_storage;
+
+-- grant permission to snowflake adim
+grant usage on INTEGRATION aws_s3_storage to role accountadmin;
+
+-- create file format
+create or replace file format csv_format
+type = 'CSV'
+field_delimiter = ','
+skip_header = 1;
+
+-- create staging area
+create or replace stage aws_stage
+storage_integration = aws_s3_storage
+file_format = csv_format
+url = 'S3://hr-data-analysis-1998/';
+
+list @aws_stage;
+
+-- Create table first:
+CREATE OR REPLACE TABLE OUR_FIRST_DB.PUBLIC.hr_data (
+-- ***
+-- fields
+-- ***
+ );
+
+
+-- Use Copy command       
+COPY INTO OUR_FIRST_DB.PUBLIC.hr_data
+    FROM @aws_stage;
+
+SELECT * FROM OUR_FIRST_DB.PUBLIC.hr_data
